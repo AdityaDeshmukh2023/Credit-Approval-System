@@ -21,7 +21,9 @@ class CreditScoreService:
                 return 50  # Default score for new customers
             
             # Check if current debt exceeds approved limit
-            current_debt = sum(loan.loan_amount for loan in loans if loan.is_active)
+            from django.utils import timezone
+            current_date = timezone.now().date()
+            current_debt = sum(float(loan.loan_amount) for loan in loans if loan.end_date >= current_date)
             if current_debt > float(customer.approved_limit):
                 return 0
             
@@ -57,7 +59,7 @@ class CreditScoreService:
         if total_emis == 0:
             return 50
         
-        on_time_percentage = (emis_paid_on_time / total_emis) * 100
+        on_time_percentage = (float(emis_paid_on_time) / float(total_emis)) * 100
         return min(100, on_time_percentage)
     
     @staticmethod
@@ -90,7 +92,7 @@ class CreditScoreService:
     @staticmethod
     def _calculate_loan_volume_score(loans, customer):
         """Calculate score based on loan approved volume"""
-        total_loan_volume = sum(loan.loan_amount for loan in loans)
+        total_loan_volume = sum(float(loan.loan_amount) for loan in loans)
         approved_limit = float(customer.approved_limit)
         
         if approved_limit == 0:
@@ -165,8 +167,10 @@ class LoanEligibilityService:
     @staticmethod
     def _calculate_current_emis(customer):
         """Calculate total current EMIs for customer"""
-        active_loans = Loan.objects.filter(customer=customer, is_active=True)
-        return sum(loan.monthly_repayment for loan in active_loans)
+        from django.utils import timezone
+        current_date = timezone.now().date()
+        active_loans = Loan.objects.filter(customer=customer, end_date__gte=current_date)
+        return sum(float(loan.monthly_repayment) for loan in active_loans)
     
     @staticmethod
     def _determine_approval(credit_score, requested_interest_rate):
@@ -288,5 +292,5 @@ class LoanCreationService:
                 'customer_id': customer_id,
                 'loan_approved': False,
                 'message': f'Error creating loan: {str(e)}',
-                'monthly_installment': 0
+                'mobnthly_installment': 0
             } 

@@ -14,11 +14,11 @@ def test_register_customer():
     print("Testing customer registration...")
     
     customer_data = {
-        "first_name": "John",
-        "last_name": "Doe",
-        "age": 30,
-        "monthly_income": 50000,
-        "phone_number": 9876543210
+        "first_name": "Aditya Deshmukh",
+        "last_name": "Deshmukh",
+        "age": 20,
+        "monthly_income": 100000,
+        "phone_number": 9876544210
     }
     
     try:
