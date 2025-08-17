@@ -292,5 +292,5 @@ class LoanCreationService:
                 'customer_id': customer_id,
                 'loan_approved': False,
                 'message': f'Error creating loan: {str(e)}',
-                'mobnthly_installment': 0
+                'monthly_installment': 0
             } 
